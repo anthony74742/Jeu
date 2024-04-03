@@ -1,0 +1,46 @@
+<body>
+  <h1 id="distance"></h1>
+  <h1 id="text"></h1>
+</body>
+
+<script>
+  const text = document.getElementById("text")
+  const distance = document.getElementById("distance")
+  
+  const stateDistance = "Loin"
+    // Establishing a WebSocket connection
+  const socket = new WebSocket('ws://192.168.26.122:80');
+
+  // Event listener for connection open
+  socket.addEventListener('open', function (event) {
+      console.log('Connected to WebSocket server');
+  });
+
+  // Event listener for receiving messages
+  socket.addEventListener('message', function (event) {
+    let json = JSON.parse(event.data)
+    console.log(json)
+    if (json.action == 'Text') {
+      text.innerHTML = json.data
+    } else if (json.action == 'Distance') {
+      console.log(json.data)
+      if (json.data > 30) {
+        distance.innerHTML = "Rapproche toi"
+        text.style.display = "None"
+      } else {
+        distance.innerHTML = "Tu peux recevoir mon message en morse, c'est secret"
+        text.style.display = "Block"
+      }
+    }
+  });
+
+  // Event listener for connection close
+  socket.addEventListener('close', function (event) {
+      console.log('Connection to WebSocket server closed');
+  });
+
+  // Event listener for connection errors
+  socket.addEventListener('error', function (event) {
+      console.error('WebSocket error:', event);
+  });
+</script>
